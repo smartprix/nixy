@@ -13,6 +13,7 @@
     "autoprefixer": "^10.0.1",
     "htmljs-parser": "^2.7.1",
     "postcss": "^8.1.1",
+    "postcss-import": "^12.0.1",
     "postcss-nested": "^5.0.1",
     "postcss-preset-env": "^6.7.0",
     "postcss-rem": "^1.1.5",

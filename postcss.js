@@ -1,10 +1,12 @@
 const postcss = require('postcss');
+const atImport = require("postcss-import");
 const autoprefixer = require('autoprefixer');
 const presetEnv = require('postcss-preset-env');
 const nested = require('postcss-nested');
 const rem = require('postcss-rem');
 
 const plugins = [
+	atImport(),
 	autoprefixer(),
 	presetEnv({
 		browsers: '> 1%, last 2 versions, Firefox ESR, not dead',
@@ -22,7 +24,10 @@ const plugins = [
 
 const parser = postcss(plugins);
 
-module.exports = async function parse(css) {
-	const result = await parser.process(css, {from: undefined, to: undefined});
+module.exports = async function parse(css, {file}) {
+	const result = await parser.process(css, {
+		from: file,
+		to: undefined,
+	});
 	return result.css;
 };

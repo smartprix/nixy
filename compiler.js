@@ -7,7 +7,8 @@ const {bundle} = require('./rollup');
 const parsePostcss = require('./postcss');
 
 const globalCss = fs.readFileSync(`${__dirname}/global.css`);
-const globalJs = fs.readFileSync(`${__dirname}/global.js`);
+const uhtmlJs = fs.readFileSync(`${__dirname}/uhtml.js`)
+const globalJs = uhtmlJs + '\n' + fs.readFileSync(`${__dirname}/global.js`);
 
 const compiledComponents = new Map();
 
@@ -854,7 +855,9 @@ async function parse(html, options = {}, data = {}) {
 
 		let style = '';
 		if (data.style.length) {
-			style = await parsePostcss(globalCss + '\n' + data.style.join('\n'));
+			style = await parsePostcss(globalCss + '\n' + data.style.join('\n'), {
+				file: options.file,
+			});
 		}
 
 		return {

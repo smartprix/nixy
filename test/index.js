@@ -1,4 +1,3 @@
-const { assert } = require('console');
 const fs = require('fs');
 const {compile} = require('../index');
 
@@ -28,7 +27,7 @@ async function main() {
 	console.log(script);
 	console.log(out);
 
-	assert(out === '<div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div></div>');
+	console.assert(out === '<div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div></div>');
 
 	console.time('render');
 	for (let i = 1; i < 10000; i++) {
