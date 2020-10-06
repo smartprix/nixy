@@ -702,7 +702,7 @@ async function parse(html, options = {}, data = {}) {
 						value: undefined,
 					});
 				}
-				write(`\${$include(${tag})(${attrToObj(attributes)})}`);
+				write(`\${$include(${tag})(${attrToObj(attributes)}, $global)}`);
 			}
 			else {
 				const tagVar = await addCustomTag(tagName);
@@ -714,7 +714,7 @@ async function parse(html, options = {}, data = {}) {
 					script(`${parentVar}.push(...${tagVar}(${attrToObj(attributes)}, ${childVar}));`);
 				}
 				else {
-					write(`\${${tagVar}(${attrToObj(attributes)})}`);
+					write(`\${${tagVar}(${attrToObj(attributes)}, $global)}`);
 				}
 			}
 		}
@@ -839,7 +839,7 @@ async function parse(html, options = {}, data = {}) {
 	const render = eval(`
 		(function() {
 			${staticScriptStr}
-			return function render(input) {\n${out}\nreturn $out;\n}
+			return function render(input, $global) {\n${out}\nreturn $out;\n}
 		})()
 	`);
 
