@@ -1,0 +1,21 @@
+{
+  "name": "nixy",
+  "version": "0.0.1",
+  "description": "HTML templating framework focused on SSR and performance",
+  "main": "index.js",
+  "repository": "https://github.com/smartprix/nixy.git",
+  "author": "Hitesh Khandelwal <hitesh@smartprix.com>",
+  "license": "ISC",
+  "private": false,
+  "dependencies": {
+    "@rollup/plugin-alias": "^3.1.1",
+    "@rollup/plugin-virtual": "^2.0.3",
+    "autoprefixer": "^10.0.1",
+    "htmljs-parser": "^2.7.1",
+    "postcss": "^8.1.1",
+    "postcss-nested": "^5.0.1",
+    "postcss-preset-env": "^6.7.0",
+    "postcss-rem": "^1.1.5",
+    "rollup": "^2.28.2"
+  }
+}

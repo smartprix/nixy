@@ -1,0 +1,17 @@
+import Ad1 from './components/Ad';
+
+static {
+	const x = 5;
+}
+
+<${'div'}>
+	<Ad if(x === 5) ...input />
+	<Ad if(x !== 5) ...input />
+	<include('Ad1') if(x === 5) ...input />
+</>
+
+<style ssr>
+.y {
+	a: b;
+}
+</style>

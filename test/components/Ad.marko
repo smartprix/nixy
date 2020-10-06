@@ -1,0 +1,47 @@
+static {
+	// Ad config
+	// {pos_1: {w: 300, h: 250, type: 'dfp', scale: true}}
+	const adConfig = {
+		mw_product_3: {
+			w: 320,
+			h: 100,
+			type: 'dfp',
+			scale: true,
+		},
+	};
+}
+
+$ {
+	const pos = input.pos;
+	const ad = adConfig[pos];
+	if (!ad) return '';
+}
+
+
+<div
+	data-pos=pos
+	class="sm-da"
+	cla=`height: ${ad.scale ? `${ad.h*100/ad.w}vw` : `${ad.h}px` }`
+>
+</div>
+
+<style ssr>
+.sm-da {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 8px 0;
+
+	> div {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transform-origin: center center;
+
+		> a {
+			display: block;
+			width: 100%;
+		}
+	}
+}
+</style>
