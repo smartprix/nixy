@@ -18,7 +18,7 @@ function getTagString(e, source) {
 		.trim();
 
 	let code = tagString.replace(tagRegExp(tagName), '').trim();
-	if (code[0] === '{') {
+	if (code[0] === '{' && code[code.length - 1] === '}') {
 		code = code.slice(1, -1).trim();
 	}
 
