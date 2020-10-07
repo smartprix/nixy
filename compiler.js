@@ -261,7 +261,7 @@ function $singleStyle(style) {
 	else {
 		const arr = [];
 		Object.entries(style).forEach(([key, val]) => {
-			if (val) arr.push(`${$kebabCase(key)}:value`);
+			if (val) arr.push(`${$kebabCase(key)}:${val}`);
 		});
 		result = arr.join(';');
 	}
