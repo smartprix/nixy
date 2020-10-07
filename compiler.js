@@ -525,12 +525,15 @@ async function parse(html, options = {}, data = {}) {
 		}
 		if (!refs[name]) {
 			cls = cls || random();
+			refs[name] = cls;
+		}
+		if (!attributes._hasClass) {
+			attributes._hasClass = true;
 			attributes.push({
 				name: 'class',
 				value: `'${cls}'`,
 				literalValue: cls,
 			});
-			refs[name] = cls;
 		}
 
 		return refs[name];
@@ -705,6 +708,29 @@ async function parse(html, options = {}, data = {}) {
 					}
 				}
 				else {
+					let value = attr.value;
+					let literalValue = attr.literalValue;
+					const regex = /([@])refs\.([a-zA-Z0-9_]+)\b/g;
+					let matches;
+					if (typeof value === 'string') {
+						// eslint-disable-next-line no-cond-assign
+						while (matches = regex.exec(value)) {
+							const key = matches[2];
+							const val = addRef([], key);
+							value = value.replace(matches[0], val);
+						}
+						attr.value = value;
+					}
+					if (typeof literalValue === 'string') {
+						// eslint-disable-next-line no-cond-assign
+						while (matches = regex.exec(literalValue)) {
+							const key = matches[2];
+							const val = addRef([], key);
+							literalValue = literalValue.replace(matches[0], val);
+						}
+						attr.literalValue = literalValue;
+					}
+
 					attributes.push(attr);
 				}
 			}
