@@ -531,8 +531,8 @@ async function parse(html, options = {}, data = {}) {
 			attributes._hasClass = true;
 			attributes.push({
 				name: 'class',
-				value: `'${cls}'`,
-				literalValue: cls,
+				value: `'${refs[name]}'`,
+				literalValue: refs[name],
 			});
 		}
 
@@ -717,18 +717,16 @@ async function parse(html, options = {}, data = {}) {
 						while (matches = regex.exec(value)) {
 							const key = matches[2];
 							const val = addRef([], key);
-							value = value.replace(matches[0], val);
+							attr.value = attr.value.replace(matches[0], val);
 						}
-						attr.value = value;
 					}
 					if (typeof literalValue === 'string') {
 						// eslint-disable-next-line no-cond-assign
 						while (matches = regex.exec(literalValue)) {
 							const key = matches[2];
 							const val = addRef([], key);
-							literalValue = literalValue.replace(matches[0], val);
+							attr.literalValue = attr.literalValue.replace(matches[0], val);
 						}
-						attr.literalValue = literalValue;
 					}
 
 					attributes.push(attr);
