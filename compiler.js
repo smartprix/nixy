@@ -361,6 +361,7 @@ async function parse(html, options = {}, data = {}) {
 	const vdom = data.vdom || false;
 	const clientScripts = data.scripts || (data.scripts = []);
 
+	let nodeDepth = 0;
 	let currentSlots = {};
 	let outs = [];
 	let out;
@@ -733,7 +734,7 @@ async function parse(html, options = {}, data = {}) {
 				}
 			}
 
-			if (node.depth === 0 && (!noStyleTags.has(tagName) || tagName.startsWith('$'))) {
+			if (nodeDepth === 0 && (!noStyleTags.has(tagName) || tagName.startsWith('$'))) {
 				attributes.push({
 					name: 'style',
 					value: 'input.style',
@@ -743,6 +744,8 @@ async function parse(html, options = {}, data = {}) {
 					value: 'input.class',
 				});
 			}
+
+			nodeDepth++;
 
 			if (type === 'element') {
 				if (vdom) {
@@ -790,6 +793,8 @@ async function parse(html, options = {}, data = {}) {
 					write(`\${${tagVar}(${attrToObj(attributes)}, $global, ${slots})}`);
 				}
 			}
+
+			nodeDepth--;
 		}
 		else {
 			throw new Error(`unknown node ${type}: ${tagName}`);
