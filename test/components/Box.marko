@@ -1,0 +1,12 @@
+<div class="box">
+	<div if(input.title) class="header">
+		<div class="title">
+			<h3>${input.title}</h3>
+			<small if(input.subTitle)>${input.subTitle}</small>
+		</div>
+		<div if($slots.actions) class="actions">
+			<slot name="actions" />
+		</div>
+	</div>
+	<slot />
+</div>

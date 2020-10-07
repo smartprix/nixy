@@ -361,6 +361,8 @@ async function parse(html, options = {}, data = {}) {
 	const vdom = data.vdom || false;
 	const clientScripts = data.scripts || (data.scripts = []);
 
+	let currentSlots = {};
+	let outs = [];
 	let out;
 	if (vdom) {
 		out = 'let _c = [];\n';
@@ -443,6 +445,43 @@ async function parse(html, options = {}, data = {}) {
 		}
 		out += str + '\n';
 		writing = false;
+	}
+
+	function slotBegin() {
+		outs.push([out, writing]);
+		writing = false;
+		out = 'let $out = "";\n';
+	}
+
+	function slotEnd() {
+		if (writing) {
+			out += '`;';
+		}
+
+		const res = out;
+		[out, writing] = outs.pop();
+		return res;
+	}
+
+	async function parseSlot(slotName, children) {
+		if (!children.length) return;
+		slotBegin();
+		await parseDom(children);
+		currentSlots[slotName] = slotEnd();
+	}
+
+	async function parseSlots(children) {
+		if (!children.length) return '{}';
+		const slots = {};
+		const prevSlots = currentSlots;
+		currentSlots = slots;
+		await parseSlot('default', children);
+		currentSlots = prevSlots;
+
+		return '{' + Object.entries(slots).map(([name, val]) => {
+			if (!val || val === 'let $out = "";\n') return '';
+			return `${name}() {\n${val}\nreturn $out;\n}`;
+		}).filter(Boolean).join(',\n') + '}';
 	}
 
 	function staticScript(str) {
@@ -604,6 +643,14 @@ async function parse(html, options = {}, data = {}) {
 			await parseDom(node.children, {parentVar});
 			script('}');
 		}
+		else if (tagName.startsWith('@')) {
+			// slot
+			await parseSlot(tagName.substring(1), node.children);
+		}
+		else if (tagName === 'slot') {
+			const slotName = node.getAttribute('name')?.literalValue || 'default';
+			write(`\${$slots.${slotName} ? $slots.${slotName}() : ''}`);
+		}
 		else if (['element', 'customElement'].includes(type)) {
 			const attributes = [];
 			const on = [];
@@ -702,7 +749,8 @@ async function parse(html, options = {}, data = {}) {
 						value: undefined,
 					});
 				}
-				write(`\${$include(${tag})(${attrToObj(attributes)}, $global)}`);
+				const slots = await parseSlots(node.children);
+				write(`\${$include(${tag})(${attrToObj(attributes)}, $global, ${slots})}`);
 			}
 			else {
 				const tagVar = await addCustomTag(tagName);
@@ -714,7 +762,8 @@ async function parse(html, options = {}, data = {}) {
 					script(`${parentVar}.push(...${tagVar}(${attrToObj(attributes)}, ${childVar}));`);
 				}
 				else {
-					write(`\${${tagVar}(${attrToObj(attributes)}, $global)}`);
+					const slots = await parseSlots(node.children);
+					write(`\${${tagVar}(${attrToObj(attributes)}, $global, ${slots})}`);
 				}
 			}
 		}
@@ -776,10 +825,6 @@ async function parse(html, options = {}, data = {}) {
 		);
 	}
 
-	// if (clientScript.length) {
-	// 	data.script.push(`(function(){\n${clientScript.join('\n')}\n})();`);
-	// }
-
 	// console.log('------- STATIC --------');
 	// console.log(staticScriptStr.trim());
 	// console.log('------- FUNC ----------');
@@ -839,7 +884,7 @@ async function parse(html, options = {}, data = {}) {
 	const render = eval(`
 		(function() {
 			${staticScriptStr}
-			return function render(input, $global) {\n${out}\nreturn $out;\n}
+			return function render(input, $global = {}, $slots = {}) {\n${out}\nreturn $out;\n}
 		})()
 	`);
 

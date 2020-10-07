@@ -8,6 +8,12 @@ static {
 	<Ad if(x === 5) ...input />
 	<Ad if(x !== 5) ...input />
 	<include('Ad1') if(x === 5) ...input />
+	<Box title="A Box">
+		<a>Hello</a>
+		<@actions>
+			<a>View All →</a>
+		</@actions>
+	</Box>
 </>
 
 <style ssr>
