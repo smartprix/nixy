@@ -37,12 +37,8 @@ function $select(selector) {
 	return document.querySelectorAll(selector);
 }
 
-function $selectAllByClass(cls) {
-	return document.getElementsByClassName(cls);
-}
-
 function $selectByClass(cls) {
-	return $selectAllByClass(cls)[0];
+	return document.getElementsByClassName(cls);
 }
 
 function _toArr(refs) {
