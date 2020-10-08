@@ -19,6 +19,11 @@
   resolved "https://registry.yarnpkg.com/@rollup/plugin-virtual/-/plugin-virtual-2.0.3.tgz#0afc88d75c1e1378ab290b8e9898d4edb5be0d74"
   integrity sha512-pw6ziJcyjZtntQ//bkad9qXaBx665SgEL8C8KI5wO8G5iU5MPxvdWrQyVaAvjojGm9tJoS8M9Z/EEepbqieYmw==
 
+"@yaska-eu/jsurl2@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@yaska-eu/jsurl2/-/jsurl2-2.1.0.tgz#6313c9f7b34c240676cfcf8b644e1c2750ea4a6c"
+  integrity sha512-+KTF0OYLPt8E1lJD9yz2ErpjJuxfFZRrCyhR1xUNyNISg96iK9EbHP0Iz3D515SI9WZ85YuljjjRyhmOae+/XQ==
+
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"

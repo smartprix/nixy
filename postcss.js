@@ -18,7 +18,8 @@ const plugins = [
 	}),
 	nested(),
 	rem({
-		baseline: 13,
+		baseline: 12.9985,
+		precision: 4,
 	}),
 ];
 

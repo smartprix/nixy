@@ -5,6 +5,7 @@ const {booleanAttr, noStyleTags} = require('./htmlInfo');
 const {toDom} = require('./markoToDom');
 const {bundle} = require('./rollup');
 const parsePostcss = require('./postcss');
+const JSUrl = require('@yaska-eu/jsurl2');
 
 const globalCss = fs.readFileSync(`${__dirname}/global.css`);
 const uhtmlJs = fs.readFileSync(`${__dirname}/uhtml.js`)
@@ -348,6 +349,14 @@ function $class(classes) {
 	});
 
 	return result.length ? ` class="${result.join(' ')}"` : '';
+}
+
+function $jsUrl(data) {
+	return JSUrl.stringify(data, {short: true});
+}
+
+function $jsurl(data) {
+	return $jsUrl(data);
 }
 
 // eslint-disable-next-line max-statements, complexity
