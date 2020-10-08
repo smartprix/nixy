@@ -717,6 +717,13 @@ async function parse(html, options = {}, data = {}) {
 						});
 					}
 				}
+				else if (attr.name === 'json') {
+					// json encode the value, can be decoded client side using $elJson(el)
+					attributes.push({
+						name: 'data--j',
+						value: `$jsUrl(${attr.value})`,
+					});
+				}
 				else {
 					let value = attr.value;
 					let literalValue = attr.literalValue;
