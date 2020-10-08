@@ -226,7 +226,7 @@ function toDom(html) {
 						parentNode.type = 'control';
 						parentNode.attributes = [];
 						parentNode.argument = attr.argument;
-						parentNode.tagString = `(${parentNode.argument.value})`;
+						parentNode.tagString = parentNode.argument ? `(${parentNode.argument.value})` : '';
 						addNode(parentNode);
 
 						node.__hasCondAttr = true;
