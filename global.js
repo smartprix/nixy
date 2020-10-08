@@ -46,10 +46,11 @@ function $selectByClass(cls) {
 }
 
 function _toArr(refs) {
+	if (!refs) return [];
 	if (typeof refs === 'string') {
 		return $select(refs);
 	}
-	return Array.isArray(refs) ? refs : [refs];
+	return refs.length === undefined ? [refs] : refs;
 }
 
 function $action(refs, func) {
@@ -282,5 +283,8 @@ function $jsUrl(data, def) {
 function $elJson(ref, attr = 'data--j') {
 	const el = $first(ref);
 	if (!el) return;
-	return $jsUrl(ref.getAttribute(attr));
+	if (el._jjson === undefined) {
+		el._jjson = $jsUrl(ref.getAttribute(attr));
+	}
+	return el._jjson;
 }
