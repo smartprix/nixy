@@ -27,10 +27,23 @@ const $state = new Proxy({}, {
 });
 
 function $style(obj) {
+	if (!obj) return '';
+	if (typeof obj === 'string') return obj;
+	if (Array.isArray(obj)) {
+		return obj.map($style).filter(Boolean).join(';');
+	}
 	return Object.entries(obj).map(([key, val]) => {
 		if (!val) return false;
 		return `${key}: ${val}`;
-	}).filter(Boolean).join('; ');
+	}).filter(Boolean).join(';');
+}
+
+function $class(obj) {
+	if (!obj) return '';
+	if (Array.isArray(obj)) {
+		return obj.map($class).filter(Boolean).join(' ');
+	}
+	return obj;
 }
 
 function $select(selector) {
