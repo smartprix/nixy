@@ -111,8 +111,9 @@ class DomNode {
 function toDom(html) {
 	const rootNodes = [];
 	let currentNode;
+	let actualCurrentNode;
 
-	function addNode(node) {
+	function addNode(node, {isNode = true} = {}) {
 		if (!currentNode) {
 			rootNodes.push(node);
 		}
@@ -120,7 +121,8 @@ function toDom(html) {
 			currentNode.appendChild(node);
 		}
 
-		currentNode = node;
+		if (isNode) currentNode = node;
+		actualCurrentNode = node;
 	}
 
 	const marko = parser.createParser({
@@ -133,8 +135,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onDeclaration(e) {
@@ -145,8 +146,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onCDATA(e) {
@@ -157,8 +157,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onComment(e) {
@@ -170,8 +169,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		// eslint-disable-next-line max-statements, complexity
@@ -263,18 +261,29 @@ function toDom(html) {
 		},
 
 		onText(e) {
-			const value = e.value.trim();
-			if (!value) return;
+			let value = e.value;
+			if (/^ +$/.test(value)) {
+				// preserve single space
+				value = ' ';
+			}
+			else {
+				value = value.trim();
+				if (!value) return;
+				if (e.value.endsWith(' ') && actualCurrentNode && actualCurrentNode.type === 'placeholder') {
+					// preserve space in case of ${placeholder} #text
+					value = value + ' ';
+				}
+			}
 
 			const node = new DomNode();
 			node.type = 'text';
 			node.tagName = '#text';
 			node.value = value;
+			node.originalValue = e.value;
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onPlaceholder(e) {
@@ -286,6 +295,15 @@ function toDom(html) {
 			const value = e.value.trim();
 			if (!value) return;
 
+			if (
+				actualCurrentNode &&
+				actualCurrentNode.type === 'text' &&
+				actualCurrentNode.originalValue.startsWith(' ')
+			) {
+				// preserve space in case of #text ${placeholder}
+				actualCurrentNode.value = ' ' + actualCurrentNode.value;
+			}
+
 			const node = new DomNode();
 			node.type = 'placeholder';
 			node.tagName = '#placeholder';
@@ -293,8 +311,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onScriptlet(e) {
@@ -308,8 +325,7 @@ function toDom(html) {
 			node.children = [];
 			node.attributes = [];
 
-			addNode(node);
-			currentNode = currentNode.parent;
+			addNode(node, {isNode: false});
 		},
 
 		onString(e) {
