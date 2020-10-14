@@ -26,6 +26,27 @@ const $state = new Proxy({}, {
 	},
 });
 
+class EventEmitter extends EventTarget {
+	on(event, fn, opts) {
+		this.addEventListener(event, (e) => {
+			fn(...e._args);
+		}, opts);
+	}
+	off(event, fn) {
+		this.removeEventListener(event, fn);
+	}
+	once(event, fn) {
+		this.on(event, fn, {once: true});
+	}
+	emit(event, ...args) {
+		const e = new Event(event);
+		e._args = args;
+		this.dispatchEvent(e);
+	}
+}
+
+const $actions = new EventEmitter();
+
 function $style(obj) {
 	if (!obj) return '';
 	if (typeof obj === 'string') return obj;
