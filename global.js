@@ -117,8 +117,18 @@ function $render(el, template) {
 	el.classList.remove('hidden');
 }
 
-function $navigate(url) {
-	window.location = url;
+function $navigate(url, opts) {
+	if (opts) {
+		if (typeof opts === 'string') {
+			opts = {target: opts};
+		}
+		if (opts.target) {
+			window.open(url, target);
+		}
+	}
+	else {
+		window.location = url;
+	}
 }
 
 /** JSURL Decode */
