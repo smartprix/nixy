@@ -269,9 +269,13 @@ function toDom(html) {
 			else {
 				value = value.trim();
 				if (!value) return;
-				if (e.value.endsWith(' ') && actualCurrentNode && actualCurrentNode.type === 'placeholder') {
+				if (
+					e.value.startsWith(' ') &&
+					actualCurrentNode &&
+					actualCurrentNode.type === 'placeholder'
+				) {
 					// preserve space in case of ${placeholder} #text
-					value = value + ' ';
+					value = ' ' + value;
 				}
 			}
 
@@ -298,10 +302,10 @@ function toDom(html) {
 			if (
 				actualCurrentNode &&
 				actualCurrentNode.type === 'text' &&
-				actualCurrentNode.originalValue.startsWith(' ')
+				actualCurrentNode.originalValue.endsWith(' ')
 			) {
 				// preserve space in case of #text ${placeholder}
-				actualCurrentNode.value = ' ' + actualCurrentNode.value;
+				actualCurrentNode.value = actualCurrentNode.value + ' ';
 			}
 
 			const node = new DomNode();
