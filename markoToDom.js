@@ -268,11 +268,11 @@ function toDom(html) {
 			}
 			else {
 				value = value.trim();
-				if (/[^\s] +$/) {
+				if (/[^\s] +$/.test(e.value)) {
 					// preserve single space at end
 					value = value + ' ';
 				}
-				if (/^ +[^\s]/) {
+				if (/^ +[^\s]/.test(e.value)) {
 					// preserve single space at start
 					value = ' ' + value;
 				}
