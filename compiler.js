@@ -110,7 +110,7 @@ function getAttr(attributes) {
 			const style = styles[0];
 			if (style[0] === '`') {
 				// style is template string
-				str = str.replace('<!-- style -->', ` style="${style}"`);
+				str = str.replace('<!-- style -->', ` style="${style.substring(1, style.length - 1)}"`);
 			}
 			else if (/^['"]/.test(style)) {
 				// style is static
@@ -134,7 +134,7 @@ function getAttr(attributes) {
 			const cls = classes[0];
 			if (cls[0] === '`') {
 				// class is template string
-				str = str.replace('<!-- class -->', ` class="${cls}"`);
+				str = str.replace('<!-- class -->', ` class="${cls.substring(1, cls.length - 1)}"`);
 			}
 			else if (/^['"]/.test(cls)) {
 				// class is static

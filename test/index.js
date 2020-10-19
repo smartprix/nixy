@@ -21,11 +21,12 @@ async function main() {
 
 	const style = comp.style;
 	const script = comp.script;
-	const out = comp.render({pos: 'mw_product_3'});
 
 	console.log(style);
 	console.log(script);
 	console.log(comp.render.toString());
+
+	const out = comp.render({pos: 'mw_product_3'});
 	console.log(out);
 
 	console.assert(out === '<div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div><div data-pos="mw_product_3" class="sm-da" cla="height: 31.25vw"></div><div class="box"><div class="header"><div class="title"><h3>A Box</h3></div><div class="actions"><a>View All →</a></div></div><a>Hello</a></div><div data--j="(a~b"></div></div>');
