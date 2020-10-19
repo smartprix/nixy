@@ -268,15 +268,15 @@ function toDom(html) {
 			}
 			else {
 				value = value.trim();
-				if (!value) return;
-				if (
-					e.value.startsWith(' ') &&
-					actualCurrentNode &&
-					actualCurrentNode.type === 'placeholder'
-				) {
-					// preserve space in case of ${placeholder} #text
+				if (/[^\s] +$/) {
+					// preserve single space at end
+					value = value + ' ';
+				}
+				if (/^ +[^\s]/) {
+					// preserve single space at start
 					value = ' ' + value;
 				}
+				if (!value) return;
 			}
 
 			const node = new DomNode();
@@ -298,15 +298,6 @@ function toDom(html) {
 
 			const value = e.value.trim();
 			if (!value) return;
-
-			if (
-				actualCurrentNode &&
-				actualCurrentNode.type === 'text' &&
-				actualCurrentNode.originalValue.endsWith(' ')
-			) {
-				// preserve space in case of #text ${placeholder}
-				actualCurrentNode.value = actualCurrentNode.value + ' ';
-			}
 
 			const node = new DomNode();
 			node.type = 'placeholder';
