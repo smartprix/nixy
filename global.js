@@ -157,7 +157,7 @@ function $navigate(url, opts) {
 			opts = {target: opts};
 		}
 		if (opts.target) {
-			window.open(url, target);
+			window.open(url, opts.target);
 		}
 	}
 	else {
