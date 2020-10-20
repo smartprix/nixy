@@ -356,11 +356,11 @@ function $jsonUrl(data) {
 }
 
 function $jsLink(link) {
-	return `l:${link.replace(/\/g/, '¦')}`;
+	return `l:${link.replace(/\//g, '¦')}`;
 }
 
 function $jsLinkNewTab(link) {
-	return `l:b:${link.replace(/\/g/, '¦')}`;
+	return `l:b:${link.replace(/\//g, '¦')}`;
 }
 
 // eslint-disable-next-line max-statements, complexity
