@@ -80,6 +80,7 @@ function _toArr(refs) {
 	if (typeof refs === 'string') {
 		return $select(refs);
 	}
+	if (refs instanceof Node) return refs;
 	return refs.length === undefined ? [refs] : refs;
 }
 
