@@ -351,12 +351,16 @@ function $class(classes) {
 	return result.length ? ` class="${result.join(' ')}"` : '';
 }
 
-function $jsUrl(data) {
+function $jsonUrl(data) {
 	return JSUrl.stringify(data, {short: true});
 }
 
-function $jsurl(data) {
-	return $jsUrl(data);
+function $jsLink(link) {
+	return `l:${link.replace(/\/g/, '¦')}`;
+}
+
+function $jsLinkNewTab(link) {
+	return `l:b:${link.replace(/\/g/, '¦')}`;
 }
 
 // eslint-disable-next-line max-statements, complexity
@@ -721,7 +725,19 @@ async function parse(html, options = {}, data = {}) {
 					// json encode the value, can be decoded client side using $elJson(el)
 					attributes.push({
 						name: 'data--j',
-						value: `$jsUrl(${attr.value})`,
+						value: `$jsonUrl(${attr.value})`,
+					});
+				}
+				else if (attr.name === 'js-url' || attr.name === 'js-link') {
+					attributes.push({
+						name: 'data--c',
+						value: `$jsLink(${attr.value})`,
+					});
+				}
+				else if (attr.name === 'js-url-blank' || attr.name === 'js-link-blank') {
+					attributes.push({
+						name: 'data--c',
+						value: `$jsLinkNewTab(${attr.value})`,
 					});
 				}
 				else {

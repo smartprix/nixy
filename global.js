@@ -328,3 +328,36 @@ function $elJson(ref, attr = 'data--j') {
 	}
 	return el._jjson;
 }
+
+$action($select('[data--c]'), (el) => {
+	const selector = el.getAttribute('data--c');
+	if (selector === 'stop') {
+		el.addEventListener('click', (e) => {
+			e.stopPropagation();
+		});
+		return;
+	}
+	let target = el.getAttribute('target');
+	if (selector.startsWith('l:')) {
+		let link = selector.substring(2).replace(/¦/g, '/');
+		if (link.startsWith('b:')) {
+			link = link.substring(2);
+			target = '_blank';
+		}
+		el.addEventListener('click', (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+			$navigate(link, target);
+		});
+		return;
+	}
+	const link = el.href;
+	const node = el.closest(selector);
+	if (node) {
+		node.addEventListener('click', (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+			$navigate(link, target);
+		});
+	}
+});
