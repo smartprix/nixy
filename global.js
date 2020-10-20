@@ -87,7 +87,7 @@ function _toArr(refs) {
 function $action(refs, func) {
 	forEach(_toArr(refs), (ref) => {
 		if (!ref) return;
-		if (!ref.length || refs instanceof Node) func(ref);
+		if (!ref.length || ref instanceof Node) func(ref);
 		else forEach(ref, el => func(el));
 	});
 }
