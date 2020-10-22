@@ -14,16 +14,6 @@ const path = require('path');
 */
 
 async function build(entries, {dir} = {}) {
-	// const normalisedEntries = {};
-	// Object.entries(entries).forEach(([key, val]) => {
-	// 	if (key.startsWith('./')) {
-	// 		normalisedEntries[`/tmp/${key.substring(2)}`] = val;
-	// 	}
-	// 	else {
-	// 		normalisedEntries[key] = val;
-	// 	}
-	// });
-
 	const plugins = [
 		virtual(entries),
 		alias({
@@ -46,7 +36,6 @@ async function build(entries, {dir} = {}) {
 	process.chdir(dir);
 
 	const bundle = await rollup.rollup(inputOptions);
-
 	const {output} = await bundle.generate(outputOptions);
 
 	let code = '';

@@ -1,12 +1,10 @@
 const postcss = require('postcss');
-const atImport = require("postcss-import");
 const autoprefixer = require('autoprefixer');
 const presetEnv = require('postcss-preset-env');
 const nested = require('postcss-nested');
 const rem = require('postcss-rem');
 
 const plugins = [
-	atImport(),
 	autoprefixer(),
 	presetEnv({
 		browsers: '> 1%, last 2 versions, Firefox ESR, not dead',

@@ -840,6 +840,7 @@ async function parse(html, options = {}, data = {}) {
 	}
 
 	if (!data.style) data.style = [];
+	if (!data.styleImports) data.styleImports = [];
 	if (!data.script) data.script = [];
 
 	const matchedRefs = new Set();
@@ -882,6 +883,10 @@ async function parse(html, options = {}, data = {}) {
 					throw new Error(`ref ${g1} not found in ${options.file} but referenced in CSS`);
 				}
 				return `.${val}`;
+			})
+			.replace(/^@import\s+(?:'|")([^;'"]*)(?:'|")\s*;?\s*$/mg, (match, g1) => {
+				data.styleImports.push(path.resolve(path.dirname(options.file), g1));
+				return '';
 			})
 		);
 	}
@@ -960,8 +965,12 @@ async function parse(html, options = {}, data = {}) {
 		}
 
 		let style = '';
-		if (data.style.length) {
-			style = await parsePostcss(globalCss + '\n' + data.style.join('\n'), {
+		if (data.style.length || data.styleImports.length) {
+			const css = data.styleImports.map((file) => {
+				return fs.readFileSync(file);
+			}).join('\n') + '\n' + data.style.join('\n');
+
+			style = globalCss + '\n' + await parsePostcss(css, {
 				file: options.file,
 			});
 		}
