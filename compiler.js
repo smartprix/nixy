@@ -374,6 +374,14 @@ async function parse(html, options = {}, data = {}) {
 	const vdom = data.vdom || false;
 	const clientScripts = data.scripts || (data.scripts = []);
 
+	let selfName = options.name;
+	if (!selfName && options.file) {
+		const matches = options.file.match(/([a-zA-Z0-9_]+)\.[a-zA-Z0-9_]+$/);
+		if (matches) {
+			selfName = matches[1];
+		}
+	}
+
 	let nodeDepth = 0;
 	let currentSlots = {};
 	let outs = [];
@@ -503,6 +511,10 @@ async function parse(html, options = {}, data = {}) {
 	}
 
 	async function addCustomTag(tagName) {
+		if (tagName === selfName || tagName === 'Self') {
+			return '$render';
+		}
+
 		const tagVar = `$tag_${tagName}`;
 		if (!$customTags.has(tagName)) {
 			const res = await include(tagName);
@@ -950,7 +962,7 @@ async function parse(html, options = {}, data = {}) {
 	const render = eval(`
 		(function() {
 			${staticScriptStr}
-			return function render(input, $global = {}, $slots = {}) {\n${out}\nreturn $out;\n}
+			return function $render(input, $global = {}, $slots = {}) {\n${out}\nreturn $out;\n}
 		})()
 	`);
 
