@@ -21,7 +21,7 @@ function isGlobalRef(refName) {
 	return refName.startsWith('$') || refName.startsWith('global_');
 }
 
-function hashRef(file, refName) {
+function hashRef(refName, file) {
 	let strToHash;
 	if (isGlobalRef(refName)) {
 		strToHash = refName;
@@ -584,7 +584,7 @@ async function parse(html, options = {}, data = {}) {
 
 	function addRef(attributes, name, cls) {
 		if (!name) {
-			name = `${hashRef(relativeFilePath).substring(1)}${anonymousRefCount++}`;
+			name = `${hashRef('', relativeFilePath).substring(1)}${anonymousRefCount++}`;
 			cls = cls || name;
 		}
 		if (!refs[name]) {

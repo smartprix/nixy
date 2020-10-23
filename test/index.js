@@ -29,7 +29,7 @@ async function main() {
 	const out = comp.render({pos: 'mw_product_3'});
 	console.log(out);
 
-	console.assert(out === '<div><div data-pos="mw_product_3" class="sm-da r00" cla="height: 31.25vw"></div><div data-pos="mw_product_3" class="sm-da r00" cla="height: 31.25vw"></div><div class="box"><div class="header"><div class="title"><h3>A Box</h3></div><div class="actions"><a>View All →</a></div></div><a>Hello</a></div><div class="gOIC" data--j="(a~b"></div></div>');
+	console.assert(out === '<div><div data-pos="mw_product_3" class="sm-da iso0" cla="height: 31.25vw"></div><div data-pos="mw_product_3" class="sm-da iso0" cla="height: 31.25vw"></div><div class="box"><div class="header"><div class="title"><h3>A Box</h3></div><div class="actions"><a>View All →</a></div></div><a>Hello</a></div><div class="kzsh" data--j="(a~b"></div></div>');
 
 	console.time('render');
 	for (let i = 1; i < 10000; i++) {
