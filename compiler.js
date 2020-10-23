@@ -17,9 +17,13 @@ function hash(str) {
 	return 'C_' + crypto.createHash('sha1').update(str).digest('base64').replace(/[+/=]/g, '');
 }
 
+function isGlobalRef(refName) {
+	return refName.startsWith('$') || refName.startsWith('global_');
+}
+
 function hashRef(file, refName) {
 	let strToHash;
-	if (refName.startsWith('$') || refName.startsWith('global_')) {
+	if (isGlobalRef(refName)) {
 		strToHash = refName;
 	}
 	else {
@@ -909,9 +913,14 @@ async function parse(html, options = {}, data = {}) {
 	}
 
 	const str = [...matchedRefs].map((key) => {
-		const val = refs[key];
+		let val = refs[key];
 		if (!val) {
-			throw new Error(`ref ${key} not found in ${options.file} but referenced in JS`);
+			if (isGlobalRef(key)) {
+				val = addRef([], key);
+			}
+			else {
+				throw new Error(`ref ${key} not found in ${options.file} but referenced in JS`);
+			}
 		}
 		return `${key}: $selectByClass('${val}')`;
 	}).join(', ');
@@ -923,9 +932,14 @@ async function parse(html, options = {}, data = {}) {
 	if (clientStyle.length) {
 		data.style.push(clientStyle.join('\n')
 			.replace(/\bref:([a-zA-Z0-9$_]+)\b/g, (match, g1) => {
-				const val = refs[g1];
+				let val = refs[g1];
 				if (!val) {
-					throw new Error(`ref ${g1} not found in ${options.file} but referenced in CSS`);
+					if (isGlobalRef(g1)) {
+						val = addRef([], g1);
+					}
+					else {
+						throw new Error(`ref ${g1} not found in ${options.file} but referenced in CSS`);
+					}
 				}
 				return `.${val}`;
 			})
