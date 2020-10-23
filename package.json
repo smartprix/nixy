@@ -1,6 +1,6 @@
 {
   "name": "nixy",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "HTML templating framework focused on SSR and performance",
   "main": "index.js",
   "repository": "https://github.com/smartprix/nixy.git",
