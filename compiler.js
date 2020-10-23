@@ -33,7 +33,7 @@ function hashRef(file, refName) {
 	const hashStr = crypto.createHash('sha1').update(strToHash).digest('base64');
 	const matches = hashStr.match(/[a-zA-Z][a-zA-Z0-9]{3}/);
 	if (matches) {
-		return matches[0];
+		return matches[0].toLowerCase();
 	}
 
 	let res = '';
@@ -50,7 +50,7 @@ function hashRef(file, refName) {
 		}
 		if (res.length >= 4) break;
 	}
-	return res;
+	return res.toLowerCase();
 }
 
 async function parseFile(file, options = {}, data = {}) {
@@ -440,6 +440,7 @@ async function parse(html, options = {}, data = {}) {
 	}
 	const baseRoot = data.baseRoot;
 	const relativeFilePath = options.file.replace(baseRoot, '');
+	let anonymousRefCount = 0;
 
 	let include;
 	if (options.include) {
@@ -583,7 +584,7 @@ async function parse(html, options = {}, data = {}) {
 
 	function addRef(attributes, name, cls) {
 		if (!name) {
-			name = `r0${Object.keys(refs).length}`;
+			name = `${hashRef(relativeFilePath).substring(1)}${anonymousRefCount++}`;
 			cls = cls || name;
 		}
 		if (!refs[name]) {
