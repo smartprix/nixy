@@ -14,7 +14,7 @@ static {
 			<a>View All →</a>
 		</@actions>
 	</Box>
-	<div json={a: 'b'} />
+	<div ref="a" json={a: 'b'} />
 </>
 
 <style ssr>
@@ -22,5 +22,9 @@ static {
 
 .y {
 	a: b;
+}
+
+ref:a {
+	font-weight: bold;
 }
 </style>

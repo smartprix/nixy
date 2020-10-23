@@ -17,6 +17,38 @@ function hash(str) {
 	return 'C_' + crypto.createHash('sha1').update(str).digest('base64').replace(/[+/=]/g, '');
 }
 
+function hashRef(file, refName) {
+	let strToHash;
+	if (refName.startsWith('$') || refName.startsWith('global_')) {
+		strToHash = refName;
+	}
+	else {
+		strToHash = file + ':' + refName;
+	}
+
+	const hashStr = crypto.createHash('sha1').update(strToHash).digest('base64');
+	const matches = hashStr.match(/[a-zA-Z][a-zA-Z0-9]{3}/);
+	if (matches) {
+		return matches[0];
+	}
+
+	let res = '';
+	for (const char of hashStr) {
+		if (!res) {
+			if (/[a-zA-Z]/.test(char)) {
+				res += char;
+			}
+		}
+		else {
+			if (/[a-zA-Z0-9]/.test(char)) {
+				res += char;
+			}
+		}
+		if (res.length >= 4) break;
+	}
+	return res;
+}
+
 async function parseFile(file, options = {}, data = {}) {
 	if (!file.startsWith('/')) {
 		throw new Error('only absolute paths are allowed');
@@ -403,6 +435,7 @@ async function parse(html, options = {}, data = {}) {
 		data.baseRoot = root;
 	}
 	const baseRoot = data.baseRoot;
+	const relativeFilePath = options.file.replace(baseRoot, '');
 
 	let include;
 	if (options.include) {
@@ -546,18 +579,18 @@ async function parse(html, options = {}, data = {}) {
 
 	function addRef(attributes, name, cls) {
 		if (!name) {
-			name = random();
+			name = `r0${Object.keys(refs).length}`;
 			cls = cls || name;
 		}
 		if (!refs[name]) {
-			cls = cls || random();
+			cls = cls || hashRef(name, relativeFilePath);
 			refs[name] = cls;
 		}
 		if (!attributes._hasClass) {
 			attributes._hasClass = true;
 			attributes.push({
 				name: 'class',
-				value: `'${refs[name]}'`,
+				value: `"${refs[name]}"`,
 				literalValue: refs[name],
 			});
 		}
@@ -755,7 +788,7 @@ async function parse(html, options = {}, data = {}) {
 				else {
 					let value = attr.value;
 					let literalValue = attr.literalValue;
-					const regex = /([@])refs\.([a-zA-Z0-9_]+)\b/g;
+					const regex = /([@])refs\.([a-zA-Z0-9$_]+)\b/g;
 					let matches;
 					if (typeof value === 'string') {
 						// eslint-disable-next-line no-cond-assign
@@ -857,7 +890,7 @@ async function parse(html, options = {}, data = {}) {
 
 	const matchedRefs = new Set();
 	let matches;
-	const regex = /([$@])refs\.([a-zA-Z0-9_]+)\b/g;
+	const regex = /([$@])refs\.([a-zA-Z0-9$_]+)\b/g;
 	for (let i = 0; i < clientScript.length; i++) {
 		let str = clientScript[i];
 		// eslint-disable-next-line no-cond-assign
@@ -889,7 +922,7 @@ async function parse(html, options = {}, data = {}) {
 
 	if (clientStyle.length) {
 		data.style.push(clientStyle.join('\n')
-			.replace(/\bref:([a-zA-Z0-9_]+)\b/g, (match, g1) => {
+			.replace(/\bref:([a-zA-Z0-9$_]+)\b/g, (match, g1) => {
 				const val = refs[g1];
 				if (!val) {
 					throw new Error(`ref ${g1} not found in ${options.file} but referenced in CSS`);
