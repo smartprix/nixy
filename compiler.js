@@ -200,12 +200,12 @@ function attrToObj(attributes, {camelCase = true} = {}) {
 	const obj = [];
 
 	if (attributes.length === 1) {
-		const {name, value} = attributes[0];
+		const {name, value, argument} = attributes[0];
 		if (name === 'input') {
 			return (value || 'input');
 		}
 		if (name.startsWith('...')) {
-			return name.substring(3);
+			return name.substring(3) + (argument ? `(${argument.value})` : '');
 		}
 	}
 
@@ -220,7 +220,7 @@ function attrToObj(attributes, {camelCase = true} = {}) {
 			obj.push(`...${attr.value}`);
 		}
 		else if (attr.name.startsWith('...')) {
-			obj.push(attr.name);
+			obj.push(attr.name + (attr.argument ? `(${attr.argument.value})` : ''));
 		}
 		else {
 			const value = attr.value === undefined ? 'true' : attr.value;
