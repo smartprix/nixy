@@ -11,7 +11,7 @@ const globalCss = fs.readFileSync(`${__dirname}/global.css`);
 const uhtmlJs = fs.readFileSync(`${__dirname}/uhtml.js`)
 const globalJs = uhtmlJs + '\n' + fs.readFileSync(`${__dirname}/global.js`);
 
-const compiledComponents = new Map();
+let compiledComponents = new Map();
 
 function hash(str) {
 	return 'C_' + crypto.createHash('sha1').update(str).digest('base64').replace(/[+/=]/g, '');
@@ -408,7 +408,6 @@ async function parse(html, options = {}, data = {}) {
 	const clientStyle = [];
 	const refs = {};
 	const vdom = data.vdom || false;
-	const clientScripts = data.scripts || (data.scripts = []);
 
 	let selfName = options.name;
 	if (!selfName && options.file) {
@@ -432,12 +431,7 @@ async function parse(html, options = {}, data = {}) {
 	let vDomIndex = 0;
 	const vDomVar = (i = 0) => `_c${vDomIndex}`;
 
-	const root = (options.root || __dirname).replace(/\/$/, '');
-	let isBase = false;
-	if (!data.baseRoot) {
-		isBase = true;
-		data.baseRoot = root;
-	}
+	const root = options.root;
 	const baseRoot = data.baseRoot;
 	const relativeFilePath = options.file.replace(baseRoot, '');
 	let anonymousRefCount = 0;
@@ -889,10 +883,6 @@ async function parse(html, options = {}, data = {}) {
 		out += '`;';
 	}
 
-	if (!data.style) data.style = [];
-	if (!data.styleImports) data.styleImports = [];
-	if (!data.script) data.script = [];
-
 	const matchedRefs = new Set();
 	let matches;
 	const regex = /([$@])refs\.([a-zA-Z0-9$_]+)\b/g;
@@ -930,8 +920,12 @@ async function parse(html, options = {}, data = {}) {
 		clientScript.unshift(`const $refs = {${str}};`);
 	}
 
+	if (clientScript.length) {
+		data.scripts[options.file.replace('.marko', '')] = clientScript.join('\n');
+	}
+
 	if (clientStyle.length) {
-		data.style.push(clientStyle.join('\n')
+		data.styles.push(clientStyle.join('\n')
 			.replace(/\bref:([a-zA-Z0-9$_]+)\b/g, (match, g1) => {
 				let val = refs[g1];
 				if (!val) {
@@ -973,38 +967,30 @@ async function parse(html, options = {}, data = {}) {
 			render: `const ${tagVar} = ${funcStr}`,
 		};
 
-		if (isBase) {
-			const fullRender = [];
-			compiledComponents.forEach((val, key) => {
-				if (!key.startsWith('vdom:')) return;
-				fullRender.push(val.render);
-			});
-			fullRender.push(ret.render);
-			ret.fullRender = fullRender.join('\n\n');
-		}
+		// if (isBase) {
+		// 	const fullRender = [];
+		// 	compiledComponents.forEach((val, key) => {
+		// 		if (!key.startsWith('vdom:')) return;
+		// 		fullRender.push(val.render);
+		// 	});
+		// 	fullRender.push(ret.render);
+		// 	ret.fullRender = fullRender.join('\n\n');
+		// }
 
 		return ret;
 	}
 
-	if (isBase) {
-		const vDomScript = [];
-		compiledComponents.forEach((val, key) => {
-			if (!key.startsWith('vdom:')) return;
-			vDomScript.push(val.render);
-		});
+	// if (isBase) {
+	// 	const vDomScript = [];
+	// 	compiledComponents.forEach((val, key) => {
+	// 		if (!key.startsWith('vdom:')) return;
+	// 		vDomScript.push(val.render);
+	// 	});
 
-		if (vDomScript.length) {
-			data.script.push(vDomScript.join('\n\n'));
-		}
-	}
-
-	if (isBase && Object.keys(clientScripts).length) {
-		clientScripts.entry = Object.keys(clientScripts)
-			.map(file => `import '${file}';`).join('\n') + clientScripts.join('\n');
-	}
-	else if (clientScript.length) {
-		clientScripts[options.file.replace('.marko', '')] = clientScript.join('\n');
-	}
+	// 	if (vDomScript.length) {
+	// 		clientScript.push(vDomScript.join('\n\n'));
+	// 	}
+	// }
 
 	// eslint-disable-next-line no-eval
 	const render = eval(`
@@ -1014,37 +1000,68 @@ async function parse(html, options = {}, data = {}) {
 		})()
 	`);
 
-	if (isBase) {
-		let script = '';
-		if (Object.keys(clientScripts).length) {
-			let bundled = await bundle(clientScripts, {
-				dir: path.dirname(options.file),
-			});
-
-			script = globalJs + '\n' + bundled;
-		}
-
-		let style = '';
-		if (data.style.length || data.styleImports.length) {
-			const css = data.styleImports.map((file) => {
-				return fs.readFileSync(file);
-			}).join('\n') + '\n' + data.style.join('\n');
-
-			style = globalCss + '\n' + await parsePostcss(css, {
-				file: options.file,
-			});
-		}
-
-		return {
-			render,
-			style,
-			script,
-		};
-	}
-
 	return {
 		render,
 	};
 }
 
-module.exports = parse;
+async function compile(html, options = {}) {
+	if (!options.file) {
+		throw new Error('file is required in options');
+	}
+
+	const opts = {
+		...options,
+		root: (options.root || path.dirname(options.file)).replace(/\/$/, ''),
+	};
+
+	const root = opts.root;
+	const scripts = {};
+	const styles = [];
+	const styleImports = [];
+
+	const data = {
+		vdom: false,
+		styles,
+		styleImports,
+		scripts,
+		baseRoot: root,
+	};
+
+	// clear compiled components cache
+	compiledComponents = new Map();
+
+	const res = await parse(html, opts, data);
+
+	let script = '';
+	let style = '';
+
+	if (Object.keys(scripts).length) {
+		scripts.entry = Object.keys(scripts)
+			.map(file => `import '${file}';`).join('\n');
+
+		const bundled = await bundle(scripts, {
+			dir: opts.root,
+		});
+
+		script = globalJs + '\n' + bundled;
+	}
+
+	if (styles.length || styleImports.length) {
+		const css = styleImports.map((file) => {
+			return fs.readFileSync(file);
+		}).join('\n') + '\n' + styles.join('\n');
+
+		style = globalCss + '\n' + await parsePostcss(css, {
+			file: opts.file,
+		});
+	}
+
+	return {
+		render: res.render,
+		style,
+		script,
+	};
+}
+
+module.exports = compile;
