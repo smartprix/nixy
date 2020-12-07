@@ -113,6 +113,31 @@ function $click(selector, func) {
 	$event('click', selector, func);
 }
 
+function $hydrate(element, fn) {
+	if (!element) return;
+	$action(element, (el) => {
+		if (el.__hydrated) return;
+		el.__hydrated = true;
+		const q = s => el.querySelectorAll(s);
+		fn({
+			el,
+			q,
+			click(selector, func) {
+				$click(q(selector), func);
+			},
+			event(name, selector, func) {
+				$event(name, q(selector), func);
+			},
+			hydrate(selector, func) {
+				hydrate(q(selector), func);
+			},
+			action(selector, func) {
+				$action(q(selector), func);
+			},
+		});
+	});
+}
+
 function $addClass(refs, cls) {
 	$action(refs, (el) => {
 		el.classList.add(cls);
