@@ -129,7 +129,7 @@ function $hydrate(element, fn) {
 				$event(name, q(selector), func);
 			},
 			hydrate(selector, func) {
-				hydrate(q(selector), func);
+				$hydrate(q(selector), func);
 			},
 			action(selector, func) {
 				$action(q(selector), func);
