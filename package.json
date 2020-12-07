@@ -9,6 +9,7 @@
   "private": false,
   "dependencies": {
     "@rollup/plugin-alias": "^3.1.1",
+    "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-virtual": "^2.0.3",
     "@yaska-eu/jsurl2": "^2.1.0",
     "autoprefixer": "^10.0.1",

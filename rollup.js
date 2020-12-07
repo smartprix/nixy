@@ -1,6 +1,7 @@
 const rollup = require('rollup');
 const virtual = require('@rollup/plugin-virtual');
 const alias = require('@rollup/plugin-alias');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const path = require('path');
 
 /**
@@ -21,6 +22,7 @@ async function build(entries, {dir} = {}) {
 				{find: /^@\/(.*)$/, replacement: path.join(dir, '$1')},
 			],
 		}),
+		nodeResolve(),
 	];
 
 	const inputOptions = {
