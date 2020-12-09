@@ -8,8 +8,7 @@ const parsePostcss = require('./postcss');
 const JSUrl = require('@yaska-eu/jsurl2');
 
 const globalCss = fs.readFileSync(`${__dirname}/global.css`);
-const uhtmlJs = fs.readFileSync(`${__dirname}/uhtml.js`)
-const globalJs = uhtmlJs + '\n' + fs.readFileSync(`${__dirname}/global.js`);
+const globalJs = fs.readFileSync(`${__dirname}/global.js`);
 
 let compiledComponents = new Map();
 
@@ -921,7 +920,7 @@ async function parse(html, options = {}, data = {}) {
 	}
 
 	if (clientScript.length) {
-		data.scripts[options.file.replace('.marko', '')] = clientScript.join('\n');
+		data.scripts[options.file.replace('.marko', '.js')] = clientScript.join('\n');
 	}
 
 	if (clientStyle.length) {

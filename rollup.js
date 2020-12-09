@@ -1,8 +1,9 @@
 const rollup = require('rollup');
-const virtual = require('@rollup/plugin-virtual');
 const alias = require('@rollup/plugin-alias');
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
+const {babel} = require('@rollup/plugin-babel');
 const path = require('path');
+const virtual = require('./rollupPluginVirtual');
 
 /**
  * entries should be
@@ -23,6 +24,29 @@ async function build(entries, {dir} = {}) {
 			],
 		}),
 		nodeResolve(),
+		babel({
+			babelrc: false,
+			exclude: ['node_modules/**'],
+			babelHelpers: 'bundled',
+			presets: [
+				[
+					require.resolve('@babel/preset-env'), {
+						useBuiltIns: false,
+						loose: true,
+						modules: false,
+						targets: {
+							// modules support
+							// NOTE: safari 10.1 does support modules, but other features support is broken
+							chrome: '61',
+							firefox: '60',
+							safari: '11.1',
+						},
+					},
+				],
+				require.resolve('babel-preset-solid'),
+				// require.resolve('@babel/preset-typescript'),
+			],
+		}),
 	];
 
 	const inputOptions = {

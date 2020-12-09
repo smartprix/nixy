@@ -165,18 +165,6 @@ function $hide(refs) {
 	$removeClass(refs, 'hidden');
 }
 
-const {html, render} = window.uhtml;
-
-function $render(el, template) {
-	if (!template) {
-		el.classList.add('hidden');
-		return render(el, html``);
-	}
-
-	render(el, template);
-	el.classList.remove('hidden');
-}
-
 function $navigate(url, opts) {
 	if (opts) {
 		if (typeof opts === 'string') {
