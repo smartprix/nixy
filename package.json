@@ -8,19 +8,19 @@
   "license": "ISC",
   "private": false,
   "dependencies": {
-    "@babel/core": "^7.12.9",
-    "@babel/preset-env": "^7.12.7",
-    "@rollup/plugin-alias": "^3.1.1",
-    "@rollup/plugin-babel": "^5.2.2",
-    "@rollup/plugin-node-resolve": "^11.0.0",
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
+    "@rollup/plugin-alias": "^3.1.2",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
     "@yaska-eu/jsurl2": "^2.1.0",
-    "autoprefixer": "^10.0.1",
-    "babel-preset-solid": "^0.23.0",
-    "htmljs-parser": "^2.7.1",
-    "postcss": "^8.1.1",
-    "postcss-nested": "^5.0.1",
+    "autoprefixer": "^10.2.5",
+    "babel-preset-solid": "^0.26.5",
+    "htmljs-parser": "^2.9.1",
+    "postcss": "^8.2.15",
+    "postcss-nested": "^5.0.5",
     "postcss-preset-env": "^6.7.0",
-    "postcss-rem": "^1.1.5",
-    "rollup": "^2.28.2"
+    "postcss-rem": "^2.0.1",
+    "rollup": "^2.47.0"
   }
 }
