@@ -183,10 +183,18 @@ function toDom(html) {
 				const start = source.src[e.pos];
 				node.isBlock = start !== '<';
 
-				if (['static', 'style', 'script', 'template'].includes(tagName)) {
+				if (['static', 'template'].includes(tagName)) {
 					marko.enterStaticTextContentState();
 				}
-
+				if (['style', 'script'].includes(tagName)) {
+					if (node.isBlock || e.attributes.some(attr => attr.name === 'ssr')) {
+						marko.enterStaticTextContentState();
+					}
+					else {
+						marko.enterParsedTextContentState();
+					}
+				}
+				
 				if (tagName === 'import') {
 					const code = node.tagString.replace(/\s*;+$/, '');
 					const matches = code.match(/^(.*)\s+from\s+(?:'|")(.*)(?:'|")$/);
@@ -202,14 +210,12 @@ function toDom(html) {
 					addNode(node);
 					return;
 				}
-
-				if (tagName === 'static') {
+				else if (tagName === 'static') {
 					node.type = 'script';
 					addNode(node);
 					return;
 				}
-
-				if (['if', 'else-if', 'else', 'for', 'while'].includes(tagName)) {
+				else if (['if', 'else-if', 'else', 'for', 'while'].includes(tagName)) {
 					node.type = 'control';
 					node.argument = e.argument;
 					addNode(node);

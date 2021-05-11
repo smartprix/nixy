@@ -110,6 +110,18 @@ function $camelCase(str) {
 	return str.replace(/-(.)/g, (m, chr) => chr.toUpperCase());
 }
 
+function interpolate(expr) {
+	return `\${${expr}}`
+}
+
+function singleAttr(attr) {
+	if (!attr) return '';
+	if (attr.literalValue || attr.literalValue === false || attr.literalValue === null) {
+		return attr.value;
+	}
+	return interpolate(attr.value);
+}
+
 // eslint-disable-next-line complexity
 function getAttr(attributes) {
 	if (!attributes.length) return '';
@@ -691,6 +703,15 @@ async function parse(html, options = {}, data = {}) {
 			if (!vdom) {
 				clientScript.push(node.textContent);
 			}
+		}
+		else if (tagName === 'json') {
+			// json tag
+			// use as: <json name="product" value={product} />
+			// will be converted to <script>var $json['product'] = JSON.parse(JSON.stringify(product))</script>
+			const nameAttr = node.getAttribute('name');
+			const name = nameAttr.literalValue || singleAttr(nameAttr);
+			const value = interpolate(`JSON.stringify(${node.getAttribute('value').value})`);
+			write(`<script>window['$json.${name}'] = JSON.parse('${value}')</script>`);
 		}
 		else if (['if', 'else-if', 'for', 'while'].includes(node.tagName)) {
 			const cond = node.argument.value;

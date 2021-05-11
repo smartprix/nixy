@@ -343,6 +343,10 @@ function $elJson(ref, attr = 'data--j') {
 	return el._jjson;
 }
 
+function $getJson(name) {
+	return window[`$json.${name}`];
+}
+
 $action($select('[data--c]'), (el) => {
 	const selector = el.getAttribute('data--c');
 	if (selector === 'stop') {
